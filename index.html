@@ -5,13 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Grow-a-Garden Pet Generator</title>
 <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
+  /* Fix: dark navy background for whole page */
+  html, body {
     margin: 0;
     padding: 0;
-    overflow-x: hidden;
+    height: 100%;
+    background: radial-gradient(ellipse at top, #0a192f 0%, #020617 100%) !important;
     color: #e0f2fe;
-    background: radial-gradient(ellipse at top, #0a192f 0%, #020617 100%);
+    overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
   }
 
   /* Starfield canvas */
@@ -19,7 +21,13 @@
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    z-index: -1;
+    z-index: 0;
+  }
+
+  /* Make content appear above stars */
+  header, .container, #popup {
+    position: relative;
+    z-index: 1;
   }
 
   header {
@@ -32,19 +40,23 @@
     border-bottom: 2px solid #3b82f6;
     color: #f8fafc;
   }
+
   .container {
     max-width: 900px;
     margin: auto;
     padding: 20px;
   }
+
   h2, h3 {
     color: #bfdbfe;
   }
+
   .pets {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
   }
+
   .pet-card {
     background: rgba(30, 41, 59, 0.9);
     border: 2px solid #3b82f6;
@@ -70,6 +82,7 @@
     border-color: #60a5fa;
     box-shadow: 0 0 14px rgba(96, 165, 250, 0.9);
   }
+
   button {
     padding: 12px 20px;
     margin-top: 14px;
@@ -88,7 +101,7 @@
     transform: scale(1.07);
   }
 
-  /* Popup modal with neon glow */
+  /* Popup modal */
   #popup {
     display: none;
     position: fixed;

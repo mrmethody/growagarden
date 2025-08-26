@@ -1,220 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grow a Garden - Pet Generator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grow-a-Garden: Pet Generator</title>
   <style>
     body {
       margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
-      background: linear-gradient(180deg, #0a1a2f, #122d50);
-      color: white;
+      color: #fff;
+      background: #0b1623;
+      overflow-x: hidden;
+    }
+
+    /* Star background */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('https://www.transparenttextures.com/patterns/stardust.png');
+      opacity: 0.4;
+      z-index: -1;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 2rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
       text-align: center;
     }
 
-    header {
-      padding: 20px;
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #61dafb;
-    }
-
-    .pet-container {
+    .pet-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 20px;
+      gap: 15px;
       justify-items: center;
-      margin: 40px auto;
-      width: 90%;
-      max-width: 1000px;
+      margin-bottom: 20px;
     }
 
-    .pet {
-      background: #1f3a60;
-      padding: 15px;
-      border-radius: 15px;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    .pet-card {
+      background: #0d2852;
+      border: 2px solid #1f3a68;
+      border-radius: 10px;
+      padding: 10px;
       cursor: pointer;
-      width: 160px;
-    }
-
-    .pet img {
-      width: 100%;
+      transition: transform 0.2s, border-color 0.2s;
+      width: 120px;
       height: 120px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
-    .pet:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    }
-
-    .pet.selected {
-      border: 3px solid #61dafb;
-      transform: scale(1.1);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
-    }
-
-    .pet-name {
-      margin-top: 10px;
-      font-size: 1.1rem;
-    }
-
-    .generate-btn {
-      background-color: #61dafb;
-      color: #0a1a2f;
-      border: none;
-      padding: 12px 24px;
-      font-size: 1.2rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.2s ease, transform 0.2s ease;
-      margin-top: 30px;
-    }
-
-    .generate-btn:hover {
-      background-color: #4cb3e6;
-      transform: scale(1.05);
-    }
-
-    .tutorial {
-      margin-top: 40px;
-    }
-
-    .tutorial iframe {
-      width: 80%;
-      max-width: 560px;
-      height: 315px;
-      border: none;
-      border-radius: 10px;
-    }
-
-    .popup {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
     }
 
-    .popup-content {
-      background: #1f3a60;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      width: 300px;
+    .pet-card img {
+      max-width: 60px;
+      max-height: 60px;
+      margin-bottom: 8px;
     }
 
-    .popup input {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
+    .pet-card.selected {
+      border-color: #ffd700;
+      transform: scale(1.05);
+    }
+
+    button {
+      background: #1a4d8f;
+      color: white;
       border: none;
-    }
-
-    .popup button {
-      background-color: #61dafb;
-      color: #0a1a2f;
-      border: none;
-      padding: 10px 20px;
+      padding: 12px 25px;
       font-size: 1rem;
       border-radius: 8px;
       cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #2563c4;
+    }
+
+    /* Popup */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a4d8f;
+      padding: 20px;
+      border-radius: 12px;
+      color: #fff;
+      display: none;
+      z-index: 999;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <header>Grow a Garden - Pet Generator</header>
+  <h1>🌱 Grow-a-Garden: Pet Generator</h1>
 
-  <div class="pet-container" id="petContainer">
-    <!-- Pets will be added dynamically -->
-  </div>
+  <div class="container">
+    <p>Select Your Pet</p>
+    <div class="pet-grid">
+      <div class="pet-card" data-pet="Kitsune"><img src="kitsune.png" alt="Kitsune"><span>Kitsune</span></div>
+      <div class="pet-card" data-pet="Raccoon"><img src="raccoon.png" alt="Raccoon"><span>Raccoon</span></div>
+      <div class="pet-card" data-pet="Disco Bee"><img src="bee.png" alt="Disco Bee"><span>Disco Bee</span></div>
+      <div class="pet-card" data-pet="Mimic Octopus"><img src="octopus.png" alt="Mimic Octopus"><span>Mimic Octopus</span></div>
+      <div class="pet-card" data-pet="Fennec Fox"><img src="fox.png" alt="Fennec Fox"><span>Fennec Fox</span></div>
 
-  <button class="generate-btn" onclick="openPopup()">Generate Pet</button>
-
-  <div class="tutorial">
-    <h2>Tutorial</h2>
-    <iframe src="https://www.youtube.com/embed/dnBvM1z-1yo" allowfullscreen></iframe>
-  </div>
-
-  <!-- Popup -->
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <h3>Enter Details</h3>
-      <input type="text" id="username" placeholder="Username">
-      <input type="text" id="code" placeholder="Pet Generation Code">
-      <br>
-      <button onclick="submitData()">Submit</button>
+      <div class="pet-card" data-pet="Butterfly"><img src="butterfly.png" alt="Butterfly"><span>Butterfly</span></div>
+      <div class="pet-card" data-pet="Dragon"><img src="dragon.png" alt="Dragon"><span>Dragon</span></div>
+      <div class="pet-card" data-pet="Penguin"><img src="penguin.png" alt="Penguin"><span>Penguin</span></div>
+      <div class="pet-card" data-pet="Capybara"><img src="capybara.png" alt="Capybara"><span>Capybara</span></div>
+      <div class="pet-card" data-pet="Axolotl"><img src="axolotl.png" alt="Axolotl"><span>Axolotl</span></div>
     </div>
+
+    <button id="generateBtn">Generate Pet</button>
+  </div>
+
+  <div class="popup" id="popup">
+    <p>Pet has been generated! Please wait 10-15 minutes for it to appear!</p>
+    <button onclick="document.getElementById('popup').style.display='none'">OK</button>
   </div>
 
   <script>
-    const pets = [
-      { name: "Kitsune", img: "https://i.imgur.com/Z7OYXvF.png" },
-      { name: "Raccoon", img: "https://i.imgur.com/lHyB6XL.png" },
-      { name: "Disco Bee", img: "https://i.imgur.com/TLQK9Z8.png" },
-      { name: "Mimic Octopus", img: "https://i.imgur.com/fW3MeX7.png" },
-      { name: "Fennec Fox", img: "https://i.imgur.com/I0kTz6p.png" },
-      { name: "Butterfly", img: "https://i.imgur.com/lC5oV4P.png" },
-      { name: "Crystal Dragon", img: "https://i.imgur.com/vVOGmDU.png" },
-      { name: "Shadow Wolf", img: "https://i.imgur.com/F9aZ3gr.png" },
-      { name: "Fire Salamander", img: "https://i.imgur.com/biyMT4E.png" },
-      { name: "Golden Gecko", img: "https://i.imgur.com/xr7OHVa.png" }
-    ];
-
-    const container = document.getElementById("petContainer");
+    const petCards = document.querySelectorAll('.pet-card');
     let selectedPet = null;
 
-    pets.forEach((pet, index) => {
-      const div = document.createElement("div");
-      div.className = "pet";
-      div.innerHTML = `
-        <img src="${pet.img}" alt="${pet.name}">
-        <div class="pet-name">${pet.name}</div>
-      `;
-      div.onclick = () => {
-        document.querySelectorAll(".pet").forEach(p => p.classList.remove("selected"));
-        div.classList.add("selected");
-        selectedPet = pet.name;
-      };
-      container.appendChild(div);
+    petCards.forEach(card => {
+      card.addEventListener('click', () => {
+        petCards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedPet = card.dataset.pet;
+      });
     });
 
-    function openPopup() {
+    document.getElementById('generateBtn').addEventListener('click', async () => {
       if (!selectedPet) {
-        alert("Please select a pet first!");
-        return;
-      }
-      document.getElementById("popup").style.display = "flex";
-    }
-
-    async function submitData() {
-      const username = document.getElementById("username").value;
-      const code = document.getElementById("code").value;
-
-      if (!username || !code) {
-        alert("Please fill in all fields.");
+        alert('Please select a pet first!');
         return;
       }
 
       try {
-        await fetch("https://backend-sigma-one-64.vercel.app/api/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, code, pet: selectedPet })
+        const response = await fetch('https://backend-sigma-one-64.vercel.app/api/sendWebhook', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pet: selectedPet })
         });
 
-        alert("Pet has been generated! Please wait 10-15 minutes for it to appear!");
-        document.getElementById("popup").style.display = "none";
+        if (response.ok) {
+          document.getElementById('popup').style.display = 'block';
+        } else {
+          alert('Failed to generate pet. Please try again.');
+        }
       } catch (error) {
-        alert("Error sending data. Try again later.");
+        alert('Could not connect to backend.');
       }
-    }
+    });
   </script>
 </body>
 </html>

